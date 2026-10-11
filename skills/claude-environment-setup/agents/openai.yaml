@@ -1,0 +1,4 @@
+interface:
+  display_name: "Claude 图文环境配置"
+  short_description: "按图文流程配置 kookeey 住宅链路、专用浏览器与 Claude Code 登录"
+  default_prompt: "使用 $claude-environment-setup 检查并复用我的 Claude 环境，按需完成网络、浏览器、手机和官方订阅登录，并记录验证结果。"
