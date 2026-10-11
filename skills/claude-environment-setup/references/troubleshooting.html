@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Claude 环境排障</title>
+<style>
+:root{--bg:#f4f7fb;--panel:#fff;--text:#1f2933;--muted:#5b6770;--line:#d9e0e8;--accent:#1f6feb;--accent-bg:#e8f1ff;--code-bg:#f0f3f7;--code-text:#16324f}
+*{box-sizing:border-box}
+html{scroll-padding-top:72px;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei','Noto Sans CJK SC','Source Han Sans SC',sans-serif;font-size:16px;line-height:1.8;word-wrap:break-word;overflow-wrap:anywhere}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid #7aa7f7;outline-offset:2px;border-radius:3px}
+.skip{position:absolute;left:-9999px;top:0;background:#fff;color:var(--accent);padding:8px 14px;z-index:100}
+.skip:focus{left:8px;top:8px}
+.topbar{display:none;position:sticky;top:0;z-index:20;align-items:center;gap:12px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+.topbar button{font:inherit;font-size:16px;line-height:1.2;padding:8px 14px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--text);cursor:pointer}
+.topbar strong{font-size:17px}
+.layout{display:flex;align-items:flex-start;max-width:1440px;margin:0 auto}
+.sidebar{position:sticky;top:0;flex:none;width:290px;height:100vh;overflow:auto;padding:24px 16px;background:var(--panel);border-right:1px solid var(--line)}
+.sidebar-title{margin:0 0 12px;padding:0 8px;font-size:18px;font-weight:700}
+.toc ul,.toc ol{list-style:none;margin:0;padding:0}
+.toc ul ul,.toc ol ol,.toc ul ol,.toc ol ul{padding-left:14px}
+.toc a{display:block;padding:6px 10px;border-radius:6px;color:var(--text);text-decoration:none;line-height:1.5}
+.toc a:hover{background:var(--accent-bg);color:var(--accent)}
+.mask{position:fixed;inset:0;z-index:25;background:rgba(15,23,42,.45)}
+.mask[hidden]{display:none}
+.main{flex:1;min-width:0;padding:32px 24px 64px}
+.content{width:100%;max-width:1000px;margin:0 auto;padding:40px 48px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:16px}
+.content>:first-child{margin-top:0}
+.content h1,.content h2,.content h3,.content h4,.content h5,.content h6{line-height:1.4;font-weight:700;color:#0f2742}
+.content h1{font-size:2rem;margin:0 0 1.2em;padding-bottom:.5em;border-bottom:2px solid var(--line)}
+.content h2{font-size:1.5rem;margin:2.2em 0 .8em;padding-left:12px;border-left:5px solid var(--accent)}
+.content h3{font-size:1.25rem;margin:1.8em 0 .6em}
+.content h4{font-size:1.1rem;margin:1.5em 0 .5em}
+.content h5,.content h6{font-size:1rem;margin:1.3em 0 .4em}
+.content p{margin:0 0 1em}
+.content ul,.content ol{margin:0 0 1em;padding-left:1.8em}
+.content li{margin:.3em 0}
+.content li>ul,.content li>ol{margin-bottom:0}
+.content blockquote{margin:1em 0;padding:.6em 1.2em;background:#f7f9fc;border-left:4px solid #9db8dd;color:var(--muted)}
+.content blockquote>:last-child{margin-bottom:0}
+.content hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+.content table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border-collapse:collapse;margin:1em 0 1.4em;font-size:16px;line-height:1.6}
+.content th,.content td{padding:10px 14px;border:1px solid var(--line);text-align:left;vertical-align:top;min-width:6em}
+.content th{background:#eef3f9;font-weight:700;white-space:nowrap}
+.content tbody tr:nth-child(even){background:#fafcfe}
+.content pre{margin:1em 0 1.4em;padding:16px 18px;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;tab-size:4}
+.content code,.content pre,.content kbd,.content samp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono','Courier New',monospace;font-size:16px}
+.content code{padding:2px 6px;background:var(--code-bg);color:var(--code-text);border-radius:4px}
+.content pre code{display:block;padding:0;background:none;border-radius:0;white-space:pre;line-height:1.6;overflow-wrap:normal;word-wrap:normal}
+.content kbd{padding:1px 6px;background:#fff;border:1px solid #b7c2cf;border-bottom-width:2px;border-radius:4px}
+.content img{display:block;max-width:100%;height:auto;margin:1em auto;border:1px solid var(--line);border-radius:6px;cursor:zoom-in}
+.content figure{margin:1em 0}
+.content figcaption{text-align:center;color:var(--muted);font-size:16px}
+#imgDialog{border:0;padding:0;background:transparent;max-width:100vw;max-height:100vh;overflow:visible;cursor:zoom-out}
+#imgDialog::backdrop{background:rgba(10,15,25,.82)}
+#bigImg{display:block;max-width:96vw;max-height:92vh;width:auto;height:auto;object-fit:contain;background:#fff;border-radius:4px}
+#closeBtn{position:fixed;top:12px;right:12px;font:inherit;font-size:16px;line-height:1.2;padding:8px 14px;border:0;border-radius:6px;background:#fff;color:#111;cursor:pointer}
+@media (max-width:900px){
+.topbar{display:flex}
+.sidebar{position:fixed;left:0;top:0;z-index:30;width:min(86vw,320px);transform:translateX(-100%);visibility:hidden;transition:transform .2s ease,visibility .2s}
+.sidebar.open{transform:none;visibility:visible}
+.main{padding:16px 12px 48px}
+.content{padding:24px 18px;border-radius:8px}
+.content h1{font-size:1.65rem}
+.content h2{font-size:1.35rem}
+}
+@media (prefers-reduced-motion:reduce){.sidebar{transition:none}}
+</style>
+</head>
+<body>
+<a class='skip' href='#article'>跳到正文</a>
+<div class='topbar'><button type='button' id='menuBtn' aria-controls='sidebar' aria-expanded='false'>目录</button><strong>Claude 环境排障</strong></div>
+<div class='mask' id='mask' hidden></div>
+<div class='layout'>
+<aside class='sidebar' id='sidebar'>
+<nav class='toc' aria-label='目录'>
+<p class='sidebar-title'>目录</p>
+<a href="#step-1" class="toc-link">关闭旧代理后全部断线</a>
+<a href="#step-2" class="toc-link">节点全红或控制接口可访问但行为异常</a>
+<a href="#step-3" class="toc-link">住宅新开通后连接超时</a>
+<a href="#step-4" class="toc-link">网页登录成功，CLI 仍使用 MiniMax</a>
+<a href="#step-5" class="toc-link">手机读屏正常，右侧或底部点击失败</a>
+<a href="#step-6" class="toc-link">到期后 Mac 可用，专用浏览器或手机仍失败</a>
+<a href="#step-7" class="toc-link">账号或购买状态缺证据</a>
+</nav>
+</aside>
+<main class='main'>
+<article class='content' id='article'>
+<h1>故障处理</h1>
+<p>先看现有状态，不先重装或退出账号。所有设置修改都先备份；排障结论只覆盖实际检查范围。</p>
+<h2 id="step-1">关闭旧代理后全部断线</h2>
+<ol>
+<li>核对系统代理、应用显式代理地址、端口监听者与 Clash 核心。</li>
+<li>新旧客户端不能同时争用同一端口。改到独立端口后，还要同步系统代理与应用环境。</li>
+<li>先确认新核心的真实请求，再退出旧客户端复验；旧客户端仍运行时成功不代表新客户端可独立工作。</li>
+<li>若当前聊天依赖代理，把可能断线的切换交给用户，并提前说清恢复步骤。</li>
+</ol>
+<p>历史曾出现：efan 占用 7897、Clash 临时 7896、Codex 仍找 7897。数字仅用于说明问题，不应硬编码为别的设备配置。</p>
+<h2 id="step-2">节点全红或控制接口可访问但行为异常</h2>
+<p>先确认核心是否持续运行，控制接口由哪个进程监听。不要把 Docker 等其他服务的响应当 Clash。节点独立测试可用，和 GUI 当前测速正常是两个证据。</p>
+<p>签名检查受沙箱限制时，先明确权限边界；不要直接推断整个应用损坏。架构不匹配、helper 服务、日志与端口冲突分开处理。下载/更新客户端时核对官方发布包及校验信息，保留订阅和私有扩展。</p>
+<h2 id="step-3">住宅新开通后连接超时</h2>
+<p>检查供应商线路状态、服务器/端口、认证、前置连通、<code>dialer-proxy</code> 引用和循环引用。允许有限复测并保留可用网络，不反复切换全机配置。历史超时随后恢复，“初始化未完成”只是当时可能解释，没有被证实。</p>
+<h2 id="step-4">网页登录成功，CLI 仍使用 MiniMax</h2>
+<ol>
+<li>检查 <code>type -a claude</code> 与实际新进程的版本，避免旧 Volta 入口。</li>
+<li>先备份 <code>~/.claude/settings.json</code>，检查配置和进程环境中的 provider/模型覆盖。</li>
+<li>重点是 <code>ANTHROPIC_AUTH_TOKEN</code>、<code>ANTHROPIC_API_KEY</code>、<code>ANTHROPIC_BASE_URL</code>、默认模型映射、<code>ANTHROPIC_MODEL</code> 和 <code>ANTHROPIC_REASONING_MODEL</code>。只读取是否存在/字段名称，日志不要带值。</li>
+<li>若目标明确为官方订阅，只处理相关旧覆盖，保留 MCP、插件、Hooks 等其他配置。</li>
+<li>重开进程，再检查认证/provider 和最小实际请求。</li>
+</ol>
+<p>不要因沙箱读取 macOS 钥匙串失败而认定已退出登录，更不要自动删除认证来“修复”。</p>
+<h2 id="step-5">手机读屏正常，右侧或底部点击失败</h2>
+<p>先比较返回的屏幕尺寸与实际设备。历史 iPhone Use runner 将屏幕误报为 320×480。只有定位到相同根因，才考虑备份代码、优先用前台应用 frame 获取尺寸、重建部署；不要对未知版本盲套补丁。</p>
+<p>构建成功、USB 连接、<code>drivable=true</code> 和真正完成点击是不同阶段。只读沙箱无法访问本机服务，不等于主控制通道失效。</p>
+<h2 id="step-6">到期后 Mac 可用，专用浏览器或手机仍失败</h2>
+<p>三处入口分开检查：Mac 的目标代理组、浏览器固定 SOCKS5 入口的实际绑定、手机选中节点。只改 Mac 组，可能遗漏浏览器固定住宅监听和手机旧节点。</p>
+<h2 id="step-7">账号或购买状态缺证据</h2>
+<p>邮箱以收件箱为准；Claude 以正确账号的实际回复为准；CLI 以认证及实际模型请求为准；交易以订单/收据为准。没有证据时保留未核实，不从其他环节补推。</p>
+
+</article>
+</main>
+</div>
+<dialog id='imgDialog' aria-label='图片预览'>
+<button type='button' id='closeBtn' aria-label='关闭预览'>关闭 ✕</button>
+<img id='bigImg' alt=''>
+</dialog>
+<script>
+(function(){
+var d=document,nav=d.getElementById('sidebar'),btn=d.getElementById('menuBtn'),mask=d.getElementById('mask');
+var dlg=d.getElementById('imgDialog'),big=d.getElementById('bigImg'),article=d.getElementById('article'),last=null;
+function setMenu(open){nav.classList.toggle('open',open);mask.hidden=!open;btn.setAttribute('aria-expanded',open?'true':'false');}
+btn.addEventListener('click',function(){setMenu(!nav.classList.contains('open'));});
+mask.addEventListener('click',function(){setMenu(false);});
+nav.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('a')){setMenu(false);}});
+function isOpen(){return dlg.open||dlg.hasAttribute('open');}
+function openImg(img){
+last=img;
+big.src=img.currentSrc||img.src;
+big.alt=img.alt||'';
+if(typeof dlg.showModal==='function'){dlg.showModal();}else{dlg.setAttribute('open','');}
+}
+function closeImg(){
+if(typeof dlg.close==='function'){dlg.close();}else{dlg.removeAttribute('open');afterClose();}
+}
+function afterClose(){
+big.removeAttribute('src');
+if(last&&last.focus){last.focus();}
+}
+dlg.addEventListener('close',afterClose);
+dlg.addEventListener('click',closeImg);
+d.addEventListener('keydown',function(e){
+if(e.key==='Escape'||e.key==='Esc'){
+if(isOpen()){e.preventDefault();closeImg();}
+else if(nav.classList.contains('open')){setMenu(false);btn.focus();}
+}
+});
+var imgs=article.querySelectorAll('img');
+for(var i=0;i<imgs.length;i++){
+imgs[i].setAttribute('tabindex','0');
+imgs[i].setAttribute('role','button');
+if(!imgs[i].getAttribute('aria-label')){imgs[i].setAttribute('aria-label',(imgs[i].alt?imgs[i].alt+'，':'')+'点击放大');}
+}
+article.addEventListener('click',function(e){
+var t=e.target;
+if(t&&t.tagName==='IMG'){e.preventDefault();openImg(t);}
+});
+article.addEventListener('keydown',function(e){
+var t=e.target;
+if(t&&t.tagName==='IMG'&&(e.key==='Enter'||e.key===' '||e.key==='Spacebar')){e.preventDefault();openImg(t);}
+});
+})();
+</script>
+</body>
+</html>

@@ -25,7 +25,7 @@
 
 1. 检查 `type -a claude` 与实际新进程的版本，避免旧 Volta 入口。
 2. 先备份 `~/.claude/settings.json`，检查配置和进程环境中的 provider/模型覆盖。
-3. 重点是 `ANTHROPIC_AUTH_TOKEN`、`ANTHROPIC_BASE_URL`、默认模型映射、`ANTHROPIC_MODEL` 和 `ANTHROPIC_REASONING_MODEL`。只读取是否存在/字段名称，日志不要带值。
+3. 重点是 `ANTHROPIC_AUTH_TOKEN`、`ANTHROPIC_API_KEY`、`ANTHROPIC_BASE_URL`、默认模型映射、`ANTHROPIC_MODEL` 和 `ANTHROPIC_REASONING_MODEL`。只读取是否存在/字段名称，日志不要带值。
 4. 若目标明确为官方订阅，只处理相关旧覆盖，保留 MCP、插件、Hooks 等其他配置。
 5. 重开进程，再检查认证/provider 和最小实际请求。
 

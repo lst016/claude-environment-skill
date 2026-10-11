@@ -1,73 +1,40 @@
-# Claude 图文环境配置 Skill
+# Claude 环境配置：真实 UI 图文 Skill
 
-把 kookeey 静态住宅 IP、Clash 分流、BitBrowser、可选 iPhone 和 Claude Code 官方订阅登录串成一套可复用流程。配置前先检查已有环境，配置后用实际请求验收。
+从自己的线路和账号开始，把 kookeey、Clash、BitBrowser 与 Claude Code 串起来。新电脑有完整安装入口；已有电脑优先复用现有环境。
 
-![一次配置，三处验收](skills/claude-environment-setup/assets/01-overview.png)
+- **[图文教程（Markdown）](skills/claude-environment-setup/references/illustrated-guide.md)**：真实界面配“在哪里点、填什么、看到什么算成功”。
+- **[离线图文页面](skills/claude-environment-setup/references/guide.html)**：下载完整仓库后直接打开，可放大截图。
+- **[装到另一台电脑](skills/claude-environment-setup/references/install.md)**：ZIP、Git、Python 安装器或手动复制；旧版本自动备份。
+- **[Agent 入口](skills/claude-environment-setup/SKILL.md)** · **[排障](skills/claude-environment-setup/references/troubleshooting.md)**
+- **[购买/查看 IP](https://www.kookeey.net/clientarea/#/static/list)**：用户指定 kookeey 入口。
 
-## 直接使用
+![真实 UI：BitBrowser SOCKS5 空白代理表单](skills/claude-environment-setup/assets/ui/bitbrowser-proxy.png)
 
-- **完整图文教程**：[按步骤查看](skills/claude-environment-setup/references/illustrated-guide.md)
-- **给 Agent 的入口**：[SKILL.md](skills/claude-environment-setup/SKILL.md)
-- **故障处理**：[端口冲突、旧 MiniMax 覆盖与手机控制](skills/claude-environment-setup/references/troubleshooting.md)
-- **购买或查看 IP**：[kookeey 静态住宅线路](https://www.kookeey.net/clientarea/#/static/list)
+## 本版补齐了什么
 
-全部图片为原创操作示意，不是用户账号截图；没有包含账号、真实出口、代理凭据或私人会话。具体界面、价格和软件选项以当前产品为准。本 Skill 不自动购买、不承诺防封、不默认清理本机身份。
+4 张旧会话用户原图：kookeey 购买页、Clash 全红、CLI 旧 MiniMax、网络重连。另有 2 张本次补拍的 BitBrowser 空白配置表单。全部保留原始像素；[来源与哈希](skills/claude-environment-setup/assets/ui/sources.json) 可查。失败截图明确标注为失败，历史价格、出口、节点名称不能照抄。含密码的线路截图和私人聊天没有打包。
 
-## 图文内容
+主流程面向 macOS。Windows 附官方安装入口和手动检查差异，尚未 Windows 实机验收；自动检查脚本在 Windows 明确拒绝成功判断。新电脑按教程重新获取端口、线路和账号，Skill 本身不会迁移这些状态。
 
-| 章节 | 内容 |
-|---|---|
-| 总览 | Mac、BitBrowser、iPhone 三个入口分别验收 |
-| kookeey | 参数、已有线路、订单确认与续费 |
-| Clash | 前置→住宅、规则顺序、端口与实际出口 |
-| iPhone | Shadowrocket 代理通过、VPN 与当前 IP |
-| Claude Code | OAuth、旧 provider 覆盖、实际模型请求 |
+## 安装和调用
 
-![kookeey 参数核对示意](skills/claude-environment-setup/assets/02-kookeey.png)
+先下载/克隆此私有仓库，并进入仓库目录。需要 Python 3.9+：
 
-## 安装
+```bash
+python3 skills/claude-environment-setup/scripts/install_skill.py --target both
+```
 
-仓库中的 Skill 位于 `skills/claude-environment-setup`。私有仓库需要当前 GitHub 账号具有访问权限；不要把访问令牌写进安装命令或仓库文件。
+Windows 用 `py -3` 替换 `python3`。已有同名副本会保留到相应工具配置目录的 skill-backups，默认安装 Codex 和 Claude Code 两边；自定义 CODEX_HOME 见[安装说明](skills/claude-environment-setup/references/install.md)。安装后开新会话，必要时重启应用。
 
-使用 Codex 自带的 `skill-installer`，指定本仓库与上述目录；也可以将该目录完整复制到：
-
-- Codex：`~/.codex/skills/claude-environment-setup`
-- Claude Code：`~/.claude/skills/claude-environment-setup`
-
-已有同名 Skill 时先比较和备份，不直接覆盖。安装后在新一轮/新会话加载；Claude Code 如未发现，重开会话。
-
-Codex 调用示例：
-
-> 使用 $claude-environment-setup 检查现有环境，按需配置 kookeey 住宅出口，并验证 Claude 网页与 CLI。
-
-Claude Code 调用：
-
-> /claude-environment-setup
-
-也可自然语言请求“按 Claude 图文环境 Skill 检查网络和登录”。Skill 被调用不代表已授权付款、重置账号或向外发送资料。
+Codex：`使用 $claude-environment-setup 检查现有环境。`  
+Claude Code：`/claude-environment-setup`
 
 ## 只读检查
 
-在 Skill 目录运行：
+在 Skill 目录运行 `python3 scripts/inspect_environment.py`，输出工具版本和经过过滤的认证/provider 状态。明确传 `--ports 你的P 你的B` 才检查对应监听；没有历史端口默认值。`--skip-auth` 可跳过本机认证检查。脚本不改设置、不输出认证值、不发模型请求。
 
-```bash
-python3 scripts/inspect_environment.py
-```
+配置校验、网页回复、CLI 模型调用、真机操作及故障恢复分别验收。安装成功不等于网络或账号已在新机可用。
 
-输出工具版本、PATH 是否有旧 Claude、provider 覆盖字段是否存在、本机监听和经过过滤的认证状态。不输出设置值、账号、Token 或密码；不改配置，不发模型请求。`--skip-auth` 可跳过本机钥匙串相关认证检查，`--ports` 可指定实际端口。
+## 验证记录
 
-该脚本通过不代表实际代理出口、网页账号、手机网络、付款、模型调用或断线恢复已验证。
-
-## 来源与维护
-
-基于 2026-10-10 至 11 的本机实际流程提炼，去除私人数据后保留机制、验证方法与已遇到的故障。网络实现参考 [Mihomo 文档](https://wiki.metacubex.one/)，服务条件查阅 [Anthropic 支持地区](https://www.anthropic.com/supported-countries)。示意图由 Claude 制作，Skill 指令与代码由 Codex 整理审查。
-
-更新时先核对当前 UI/版本，不把历史端口、IP、报价和时区写成所有机器的默认事实。
-
-## 本版校验（2026-10-11）
-
-- Skill 结构校验通过。
-- MiniMax 独立 CLI 实际运行 5 项隐私/只读边界测试，5 通过、0 失败；测试使用合成数据。
-- 主代理核对 12 个本地文档/图片链接，5 张 PNG 和 5 张 SVG 均有效；逐图检查文字、布局和示意标记。
-- 正常本机权限实际运行只读检查脚本成功，认证输出经过过滤；没有重新执行住宅网络配置、手机配置或付款。
-- 图片设计使用 Claude，代码与内容由 Codex 审查。复杂环境差异仍需调用 Skill 时按实际设备验收。
+本版结果见 [验证记录](VALIDATION.md)。软件步骤依据 [Claude Code 官方说明](https://code.claude.com/docs/en/setup)、[BitBrowser 官网](https://www.bitbrowser.net/download) 和 [Mihomo 文档](https://wiki.metacubex.one/)。图文布局由 Claude 制作，内容与代码由 Codex 核对。

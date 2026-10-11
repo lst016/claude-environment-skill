@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>安装到另一台电脑</title>
+<style>
+:root{--bg:#f4f7fb;--panel:#fff;--text:#1f2933;--muted:#5b6770;--line:#d9e0e8;--accent:#1f6feb;--accent-bg:#e8f1ff;--code-bg:#f0f3f7;--code-text:#16324f}
+*{box-sizing:border-box}
+html{scroll-padding-top:72px;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei','Noto Sans CJK SC','Source Han Sans SC',sans-serif;font-size:16px;line-height:1.8;word-wrap:break-word;overflow-wrap:anywhere}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid #7aa7f7;outline-offset:2px;border-radius:3px}
+.skip{position:absolute;left:-9999px;top:0;background:#fff;color:var(--accent);padding:8px 14px;z-index:100}
+.skip:focus{left:8px;top:8px}
+.topbar{display:none;position:sticky;top:0;z-index:20;align-items:center;gap:12px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+.topbar button{font:inherit;font-size:16px;line-height:1.2;padding:8px 14px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--text);cursor:pointer}
+.topbar strong{font-size:17px}
+.layout{display:flex;align-items:flex-start;max-width:1440px;margin:0 auto}
+.sidebar{position:sticky;top:0;flex:none;width:290px;height:100vh;overflow:auto;padding:24px 16px;background:var(--panel);border-right:1px solid var(--line)}
+.sidebar-title{margin:0 0 12px;padding:0 8px;font-size:18px;font-weight:700}
+.toc ul,.toc ol{list-style:none;margin:0;padding:0}
+.toc ul ul,.toc ol ol,.toc ul ol,.toc ol ul{padding-left:14px}
+.toc a{display:block;padding:6px 10px;border-radius:6px;color:var(--text);text-decoration:none;line-height:1.5}
+.toc a:hover{background:var(--accent-bg);color:var(--accent)}
+.mask{position:fixed;inset:0;z-index:25;background:rgba(15,23,42,.45)}
+.mask[hidden]{display:none}
+.main{flex:1;min-width:0;padding:32px 24px 64px}
+.content{width:100%;max-width:1000px;margin:0 auto;padding:40px 48px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:16px}
+.content>:first-child{margin-top:0}
+.content h1,.content h2,.content h3,.content h4,.content h5,.content h6{line-height:1.4;font-weight:700;color:#0f2742}
+.content h1{font-size:2rem;margin:0 0 1.2em;padding-bottom:.5em;border-bottom:2px solid var(--line)}
+.content h2{font-size:1.5rem;margin:2.2em 0 .8em;padding-left:12px;border-left:5px solid var(--accent)}
+.content h3{font-size:1.25rem;margin:1.8em 0 .6em}
+.content h4{font-size:1.1rem;margin:1.5em 0 .5em}
+.content h5,.content h6{font-size:1rem;margin:1.3em 0 .4em}
+.content p{margin:0 0 1em}
+.content ul,.content ol{margin:0 0 1em;padding-left:1.8em}
+.content li{margin:.3em 0}
+.content li>ul,.content li>ol{margin-bottom:0}
+.content blockquote{margin:1em 0;padding:.6em 1.2em;background:#f7f9fc;border-left:4px solid #9db8dd;color:var(--muted)}
+.content blockquote>:last-child{margin-bottom:0}
+.content hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+.content table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border-collapse:collapse;margin:1em 0 1.4em;font-size:16px;line-height:1.6}
+.content th,.content td{padding:10px 14px;border:1px solid var(--line);text-align:left;vertical-align:top;min-width:6em}
+.content th{background:#eef3f9;font-weight:700;white-space:nowrap}
+.content tbody tr:nth-child(even){background:#fafcfe}
+.content pre{margin:1em 0 1.4em;padding:16px 18px;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;tab-size:4}
+.content code,.content pre,.content kbd,.content samp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono','Courier New',monospace;font-size:16px}
+.content code{padding:2px 6px;background:var(--code-bg);color:var(--code-text);border-radius:4px}
+.content pre code{display:block;padding:0;background:none;border-radius:0;white-space:pre;line-height:1.6;overflow-wrap:normal;word-wrap:normal}
+.content kbd{padding:1px 6px;background:#fff;border:1px solid #b7c2cf;border-bottom-width:2px;border-radius:4px}
+.content img{display:block;max-width:100%;height:auto;margin:1em auto;border:1px solid var(--line);border-radius:6px;cursor:zoom-in}
+.content figure{margin:1em 0}
+.content figcaption{text-align:center;color:var(--muted);font-size:16px}
+#imgDialog{border:0;padding:0;background:transparent;max-width:100vw;max-height:100vh;overflow:visible;cursor:zoom-out}
+#imgDialog::backdrop{background:rgba(10,15,25,.82)}
+#bigImg{display:block;max-width:96vw;max-height:92vh;width:auto;height:auto;object-fit:contain;background:#fff;border-radius:4px}
+#closeBtn{position:fixed;top:12px;right:12px;font:inherit;font-size:16px;line-height:1.2;padding:8px 14px;border:0;border-radius:6px;background:#fff;color:#111;cursor:pointer}
+@media (max-width:900px){
+.topbar{display:flex}
+.sidebar{position:fixed;left:0;top:0;z-index:30;width:min(86vw,320px);transform:translateX(-100%);visibility:hidden;transition:transform .2s ease,visibility .2s}
+.sidebar.open{transform:none;visibility:visible}
+.main{padding:16px 12px 48px}
+.content{padding:24px 18px;border-radius:8px}
+.content h1{font-size:1.65rem}
+.content h2{font-size:1.35rem}
+}
+@media (prefers-reduced-motion:reduce){.sidebar{transition:none}}
+</style>
+</head>
+<body>
+<a class='skip' href='#article'>跳到正文</a>
+<div class='topbar'><button type='button' id='menuBtn' aria-controls='sidebar' aria-expanded='false'>目录</button><strong>安装到另一台电脑</strong></div>
+<div class='mask' id='mask' hidden></div>
+<div class='layout'>
+<aside class='sidebar' id='sidebar'>
+<nav class='toc' aria-label='目录'>
+<p class='sidebar-title'>目录</p>
+<a href="#step-1" class="toc-link">方法 A：下载 ZIP，不依赖旧电脑的 Codex 安装器</a>
+<a href="#step-2" class="toc-link">方法 B：自己已有 Git 或 GitHub CLI</a>
+<a href="#step-3" class="toc-link">无 Python 时手动安装</a>
+<a href="#step-4" class="toc-link">打开教程与调用</a>
+<a href="#step-5" class="toc-link">更新与回退</a>
+<a href="#step-6" class="toc-link">验证范围</a>
+</nav>
+</aside>
+<main class='main'>
+<article class='content' id='article'>
+<h1>把完整 Skill 安装到另一台电脑</h1>
+<p>本仓库为私有仓库，需要自己的 GitHub 账号具有访问权限。Skill 不含代理密码、订阅、Cookie 或 Claude 登录凭据。只有 SKILL.md 而没有 assets/references/scripts 是不完整安装。</p>
+<h2 id="step-1">方法 A：下载 ZIP，不依赖旧电脑的 Codex 安装器</h2>
+<ol>
+<li>登录 GitHub，打开 <a href="https://github.com/lst016/claude-environment-skill">仓库</a>。</li>
+<li>点 <strong>Code → Download ZIP</strong>，在新电脑解压。</li>
+<li>打开终端，进入解压出的仓库目录；目录名由你的下载位置决定。</li>
+<li>安装前检查下列命令对应的源目录，已有同名 Skill 会自动移到 <code>skill-backups</code> 中保留。</li>
+</ol>
+<p>macOS/Linux（需要 Python 3.9+）：</p>
+<pre><code class="language-bash">python3 skills/claude-environment-setup/scripts/install_skill.py --target both
+</code></pre>
+<p>Windows PowerShell（已安装 Python 3.9+，Python Launcher 可用时）：</p>
+<pre><code class="language-powershell">py -3 skills/claude-environment-setup/scripts/install_skill.py --target both
+</code></pre>
+<p>只装一边，把 both 换成 codex 或 claude。脚本复制本目录内的全部文件；不安装客户端、不改网络、不迁移账号。默认目录为用户主目录下 <code>.codex/skills/claude-environment-setup</code> 和 <code>.claude/skills/claude-environment-setup</code>。</p>
+<p>如果已在 Skill 目录内，直接运行 <code>python3 scripts/install_skill.py --target both</code>（Windows 用 <code>py -3</code>）。不依赖仓库根目录 README。</p>
+<h2 id="step-2">方法 B：自己已有 Git 或 GitHub CLI</h2>
+<p><code>gh</code> 已安装时，先用自己的账号完成 <code>gh auth login</code>，然后：</p>
+<pre><code class="language-bash">gh repo clone lst016/claude-environment-skill
+cd claude-environment-skill
+python3 skills/claude-environment-setup/scripts/install_skill.py --target both
+</code></pre>
+<p>也可 <code>git clone https://github.com/lst016/claude-environment-skill.git</code>，使用系统已有的凭据管理器。不要把访问 Token 拼进命令或仓库 URL。</p>
+<h2 id="step-3">无 Python 时手动安装</h2>
+<p>将仓库内 <code>skills/claude-environment-setup</code> <strong>整个文件夹</strong>复制到需要的用户 Skill 目录。已有同名文件夹先移到 skills 外的备份目录，再复制新版本。不要把备份留在可自动扫描的 skills 目录里。</p>
+<p>自定义了 <code>CODEX_HOME</code> 的机器，应复制到实际 <code>$CODEX_HOME/skills</code>；本安装脚本只写上面两处默认目录。Windows 对应用户主目录通常为 <code>%USERPROFILE%</code>，不使用 macOS <code>/Users/...</code> 路径。</p>
+<h2 id="step-4">打开教程与调用</h2>
+<p>直接打开已安装目录中的 <code>references/guide.html</code>。全部图片/样式在本地包内，不需要访问旧电脑；页面官方链接和软件服务仍需网络。也可阅读 <code>references/illustrated-guide.md</code>。</p>
+<p>安装后开启新会话；Codex 如果未加载则重启应用。调用：</p>
+<ul>
+<li>Codex：<code>使用 $claude-environment-setup，从零配置这台电脑，先检查现有状态。</code></li>
+<li>Claude Code：<code>/claude-environment-setup</code></li>
+</ul>
+<p>要迁移网络环境，继续读图文指南第 0、1、7 步。复制 Skill 不能使新电脑自动获得旧电脑的线路和登录状态。</p>
+<h2 id="step-5">更新与回退</h2>
+<p>重新下载新版本，先比较自己的改动，再运行同一安装命令。旧副本保留在该工具用户配置目录的 <code>skill-backups/claude-environment-setup/日期</code> 下；脚本输出具体位置。</p>
+<p>回退时先退出使用该 Skill 的会话，把当前目录移到备份位置，再将需要的旧副本移回 skills 目录。不会删除旧副本，也不把整个用户配置目录覆盖掉。</p>
+<h2 id="step-6">验证范围</h2>
+<p>安装器在本机临时目录通过“首次完整复制、保留旧版本、从已安装副本更新”测试。本机 macOS 两边安装另作哈希核对；尚未在另一台物理电脑或 Windows 上运行安装。</p>
+
+</article>
+</main>
+</div>
+<dialog id='imgDialog' aria-label='图片预览'>
+<button type='button' id='closeBtn' aria-label='关闭预览'>关闭 ✕</button>
+<img id='bigImg' alt=''>
+</dialog>
+<script>
+(function(){
+var d=document,nav=d.getElementById('sidebar'),btn=d.getElementById('menuBtn'),mask=d.getElementById('mask');
+var dlg=d.getElementById('imgDialog'),big=d.getElementById('bigImg'),article=d.getElementById('article'),last=null;
+function setMenu(open){nav.classList.toggle('open',open);mask.hidden=!open;btn.setAttribute('aria-expanded',open?'true':'false');}
+btn.addEventListener('click',function(){setMenu(!nav.classList.contains('open'));});
+mask.addEventListener('click',function(){setMenu(false);});
+nav.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('a')){setMenu(false);}});
+function isOpen(){return dlg.open||dlg.hasAttribute('open');}
+function openImg(img){
+last=img;
+big.src=img.currentSrc||img.src;
+big.alt=img.alt||'';
+if(typeof dlg.showModal==='function'){dlg.showModal();}else{dlg.setAttribute('open','');}
+}
+function closeImg(){
+if(typeof dlg.close==='function'){dlg.close();}else{dlg.removeAttribute('open');afterClose();}
+}
+function afterClose(){
+big.removeAttribute('src');
+if(last&&last.focus){last.focus();}
+}
+dlg.addEventListener('close',afterClose);
+dlg.addEventListener('click',closeImg);
+d.addEventListener('keydown',function(e){
+if(e.key==='Escape'||e.key==='Esc'){
+if(isOpen()){e.preventDefault();closeImg();}
+else if(nav.classList.contains('open')){setMenu(false);btn.focus();}
+}
+});
+var imgs=article.querySelectorAll('img');
+for(var i=0;i<imgs.length;i++){
+imgs[i].setAttribute('tabindex','0');
+imgs[i].setAttribute('role','button');
+if(!imgs[i].getAttribute('aria-label')){imgs[i].setAttribute('aria-label',(imgs[i].alt?imgs[i].alt+'，':'')+'点击放大');}
+}
+article.addEventListener('click',function(e){
+var t=e.target;
+if(t&&t.tagName==='IMG'){e.preventDefault();openImg(t);}
+});
+article.addEventListener('keydown',function(e){
+var t=e.target;
+if(t&&t.tagName==='IMG'&&(e.key==='Enter'||e.key===' '||e.key==='Spacebar')){e.preventDefault();openImg(t);}
+});
+})();
+</script>
+</body>
+</html>

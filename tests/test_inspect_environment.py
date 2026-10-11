@@ -87,6 +87,26 @@ class InspectEnvironmentTests(unittest.TestCase):
         with patch.object(mod.subprocess, 'run', side_effect=subprocess.TimeoutExpired('PRIVATE_COMMAND', 15)):
             self.assertIsNone(mod.run(['claude', '--version']))
 
+    def test_no_historical_ports_checked_by_default(self):
+        data, _ = self.report(self.success)
+        self.assertEqual(data['ports'], [])
+
+    def test_windows_stops_without_claiming_success(self):
+        with patch.object(mod.platform, 'system', return_value='Windows'), \
+             patch.object(mod, 'run') as runner, \
+             patch('sys.argv', ['inspect_environment.py']), \
+             contextlib.redirect_stdout(io.StringIO()) as out:
+            with self.assertRaises(SystemExit) as error:
+                mod.main()
+        self.assertEqual(error.exception.code, 2)
+        self.assertFalse(json.loads(out.getvalue())['supported'])
+        runner.assert_not_called()
+
+    def test_api_key_override_reported_without_value(self):
+        data, text = self.report(self.success, {'env': {'ANTHROPIC_API_KEY': 'PRIVATE_API_KEY_VALUE'}})
+        self.assertIn('ANTHROPIC_API_KEY', data['settings']['provider_override_keys'])
+        self.assertNotIn('PRIVATE_API_KEY_VALUE', text)
+
 
 if __name__ == '__main__':
     unittest.main()

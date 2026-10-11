@@ -9,9 +9,10 @@ from pathlib import Path
 import platform
 import shutil
 import subprocess
+import sys
 
 OVERRIDES = {
-    'ANTHROPIC_AUTH_TOKEN', 'ANTHROPIC_BASE_URL',
+    'ANTHROPIC_AUTH_TOKEN', 'ANTHROPIC_API_KEY', 'ANTHROPIC_BASE_URL',
     'ANTHROPIC_DEFAULT_HAIKU_MODEL', 'ANTHROPIC_DEFAULT_SONNET_MODEL',
     'ANTHROPIC_DEFAULT_OPUS_MODEL', 'ANTHROPIC_MODEL',
     'ANTHROPIC_REASONING_MODEL',
@@ -35,12 +36,18 @@ def executable(name: str) -> str | None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--ports', type=int, nargs='+', default=[7897, 7898])
+    parser.add_argument('--ports', type=int, nargs='+', default=[], help='Actual local ports; omitted means not checked')
     parser.add_argument('--skip-auth', action='store_true', help='Skip local authentication status')
     args = parser.parse_args()
     if any(p < 1 or p > 65535 for p in args.ports):
         parser.error('ports must be between 1 and 65535')
     report: dict = {'system': platform.system(), 'checks_are_read_only': True, 'tools': {}}
+    if platform.system() not in ('Darwin', 'Linux'):
+        report.update(supported=False, reason='unsupported_platform',
+                      next_step='Use the Windows manual checks in references/illustrated-guide.md')
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+        sys.exit(2)
+    report['supported'] = True
     for name in ('claude', 'codex'):
         cmd = executable(name)
         result = run([cmd, '--version']) if cmd else None

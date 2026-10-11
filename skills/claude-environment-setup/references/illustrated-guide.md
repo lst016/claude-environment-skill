@@ -1,49 +1,76 @@
-# 图文操作指南
+# Claude 环境：跟着真实界面配置
 
-更新时间：2026-10-11。面向 macOS、Clash Verge / Mihomo、BitBrowser、可选 iPhone Shadowrocket 和 Claude Code。来自本项目已执行流程的可复用提炼；图为原创操作示意，未连接用户账号，也不表示已经在当前设备执行。
+更新：2026-10-11 · 主流程适用于 macOS。Windows 附有安装及端口检查差异，尚未实机验收。图片可点开查看原尺寸。
 
-## 1. 先认清三个入口
+**新电脑从第 0 步开始；已有环境从第 1 步核对。** 不依赖旧电脑桌面路径、固定端口、环境序号或已登录状态。迁移 Skill 不会迁移账号、代理订阅或浏览器登录。
 
-![总览：Mac、专用浏览器与 iPhone 分别验收](../assets/01-overview.png)
+[离线图文页面](guide.html) · [安装到另一台电脑](install.md) · [排障](troubleshooting.md) · [图片来源](../assets/ui/sources.json)
 
-Mac 域名分流、BitBrowser 整个专用窗口和 iPhone VPN 是三个入口。Mac 配好了，不代表另外两个自动同步。
+## 0. 新电脑先准备这些
 
-| 入口 | 作用 | 先检查 |
+| 准备项 | 在哪里取得 | 看到什么才算完成 |
 |---|---|---|
-| Mac Clash | 国内白名单直连、目标走住宅、其他海外走前置 | 核心、监听端口、TUN/显式代理、连接日志 |
-| BitBrowser | 专用窗口内收信、验证和 OAuth | 复用已有环境、代理端口、窗口实际出口 |
-| iPhone | 手机 App 与 Safari 访问 | Shadowrocket 节点、代理通过、VPN 与当前出口 |
+| Clash Verge Rev | [项目官方发布页](https://github.com/clash-verge-rev/clash-verge-rev/releases)；按系统和 CPU 选包 | 应用能启动，Mihomo 核心正常运行 |
+| 可用前置网络 | 用户自己的已有服务；在 Clash 的“订阅”导入该服务的链接/配置 | 选一个前置节点，实际访问海外网站成功 |
+| kookeey 线路 | [用户指定入口](https://www.kookeey.net/clientarea/#/static/list)；先看已有订单 | 有效线路及其服务器、端口、认证参数 |
+| BitBrowser | [官网下载](https://www.bitbrowser.net/download)，按系统选版本 | 可进入“浏览器窗口”列表 |
+| 邮箱和 Claude 账号 | 使用自己的目标账号；[官方服务支持条件](https://www.anthropic.com/supported-countries) | 能收验证邮件，Claude 账号具备目标服务权限 |
+| Claude Code | [官方安装说明](https://code.claude.com/docs/en/setup) | 新终端运行 `claude --version` 有版本号 |
+| 本 Skill | [本包安装说明](install.md) | 新会话能调用 Skill，图片和参考文件完整 |
 
-单次配置核验不等于长期稳定。整个链路需要可用前置，住宅本身不一定能从当前网络直连。
+住宅代理不等于可用前置。免费 Claude 网页账号也不等于具有 Claude Code 订阅权限。以上均需自己的授权和有效服务；Skill 不提供账号、线路或服务资格。
 
-## 2. 在 kookeey 购买或复用线路
+macOS 的 Claude Code 官方原生安装命令如下；已有安装先核对入口，避免重复装多份：
 
-![kookeey 参数核对与交易顺序示意](../assets/02-kookeey.png)
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
 
-固定入口：[kookeey 静态住宅线路](https://www.kookeey.net/clientarea/#/static/list)。登录后先看已有线路，避免重复购买。如果需要购买，从当前页面提供的购买入口继续，按钮名称以实际 UI 为准。
+装好后重开终端，再运行 `claude --version`。若找不到命令，按官方 PATH 排障页修复；不要照抄别人的用户名路径。Python 检查脚本需要 Python 3.9+，没有 Python 仍可按图手动检查。
 
-| 项目 | 核对方式 |
-|---|---|
-| 类型 | 静态住宅 / ISP；不能仅凭节点名称认定独享或固定 |
-| 国家/城市 | 按用户目标选择；本项目历史示例是美国洛杉矶 |
-| 协议 | 客户端可用的协议，本指南以 SOCKS5 为例 |
-| 带宽、时长、数量 | 按实际需求核对；历史参考为 5Mbps / 30天 / 1条 |
-| 前置与 UDP | 核对是否需要前置、线路是否支持 UDP；不支持时关闭 |
-| 总价与续费 | 以最终订单为准；明确是否自动续费，不沿用历史报价 |
+## 1. 先填自己的参数表
 
-先让用户确认具体订单再付款。开通后，在受限位置私密保存服务器、端口、认证、当前出口和到期时间。普通笔记只保留不含凭据的摘要；不要把供应商访问密钥或节点导入 URL 放进 Git。
+这张表在当前机器填写，包含认证的部分只存本机私有位置。不要把填写后的表提交 Git。
 
-本项目采用过“首月住宅、以后普通美国节点”的预算方案；到期不会自动切换，且没有证据说明用满一个月会得到防封保证。
+| 参数 | 从哪里读 | 本机要记录什么 |
+|---|---|---|
+| 系统 / CPU | 系统信息 | macOS/Windows，Apple Silicon/x64 |
+| 前置组 `Front` | Clash → 代理；实际可连的节点/组 | 完整名称；示例 Front 需替换 |
+| 住宅参数 | kookeey → 已购线路明细 | 协议、服务器、端口、账号、密码、UDP、到期 |
+| Mac 普通代理端口 `P` | Clash → 设置 → 端口；再查监听者 | 当前可用端口，例如 7897，只是例子 |
+| 浏览器专用 SOCKS 端口 `B` | 下方第 3 步创建的 listener | 当前可用且不同于 P 的端口，例如 7898 |
+| BitBrowser 环境 | 浏览器窗口列表 | 新建或迁移的目标环境；编号可能不同 |
+| Claude 登录目标 | 自己的账号页面 | 目标账号和订阅/API 方式，别记录密码 |
 
-## 3. 配置 Clash 的分流和链式代理
+**已有电脑：** 复用已经成功的专用环境，保留 Cookie、指纹和代理状态。**全新电脑：** 先检查同账号下是否已有同步环境；有则核对权限后复用，没有才创建一个专用窗口。环境序号 1 只是历史实例。
 
-![Clash 规则顺序与住宅连接示意](../assets/03-clash.png)
+## 2. kookeey：先看已有线路，再决定买不买
 
-先备份现有订阅和扩展，再识别可用前置。住宅节点通过 `dialer-proxy` 指向前置节点或组；名称必须完全一致，且不能指向自己。
+![旧会话原图：kookeey 购买页；图内价格、默认随机地区均为历史状态](../assets/ui/kookeey-buy-history.png)
 
-规则顺序：目标域名 → 国内域名/IP → MATCH 海外兜底。保持规则模式，不用全局模式代替这套分流。
+**这张是你之前发的真实界面。** 图内默认选“随机”，并不表示应购买随机地区；历史价格不作为当前报价。
 
-下面是逻辑片段，不能直接当完整配置导入。占位值必须在本机私有配置内替换，不要把填写后的版本提交仓库：
+1. 打开 [静态线路页面](https://www.kookeey.net/clientarea/#/static/list)，登录自己的账号，先点 **已购线路明细**。
+2. 已有有效线路：核对 **代理状态、剩余时间、协议、服务器地址、端口号、账号/密码、出口 IP**。这些字段对应后续客户端配置，不需要重复购买。
+3. 没有有效线路且确有需求：点 **购买静态住宅(ISP)代理**，选择自己的目标国家与城市；别跳过“随机/指定城市”的区别。
+4. 核对 SOCKS5 等协议、带宽、UDP、时长、数量、总价、自动续费。只有明确确认具体订单后才付款。
+5. 开通后回到 **已购线路明细**，等状态正常，再把当前参数填入本机私有配置。
+
+**预期结果：** 线路存在且有效，能取得当前参数。付款按钮或订单页截图不能证明代理能连接。含明文密码的已购线路原图没有打包进本 Skill。
+
+## 3. Clash：先前置，再住宅，再分流
+
+![旧会话原图：Clash 的代理页面全部 Error，这是失败状态](../assets/ui/clash-nodes-error.png)
+
+**在哪里看：** 左侧 **订阅** 导入自己的前置服务；左侧 **代理** 查看节点；右上选 **规则**。这张原图说明“节点已经显示出来”仍可能全部不可用。
+
+1. 备份当前订阅、扩展和设置。先只用前置做一次真实访问，成功后再接住宅。
+2. 在当前订阅支持的扩展/覆写机制里加入住宅节点。服务器、端口、认证必须来自当前 kookeey 线路。`dialer-proxy` 填真实存在的前置节点或组，不能填住宅自己。
+3. 加入 `ClaudeExit` 组选择住宅节点；目标域名规则放在国内规则及 MATCH 前。
+4. 给 BitBrowser 建一个只监听 `127.0.0.1` 的独立 SOCKS 入口，固定指向 `ClaudeExit`。只改系统 mixed-port 不会自动生成专用入口。
+5. 客户端校验配置并重载，确认核心继续运行、P/B 端口监听正常。校验失败则恢复备份，不清空整个订阅重来。
+
+下面是**合并片段**，不是完整订阅。已有 `proxies` / `proxy-groups` / `listeners` / `rules` 时合并到对应列表，不能重复顶层键。`Front` 必须换成现有可用前置；7898 必须换成你的 B。GUI 的扩展形式因版本不同而异，由 Agent 先读取当前格式再合并，不直接覆盖供应商文件。
 
 ```yaml
 proxies:
@@ -55,86 +82,68 @@ proxies:
     password: FILL_PRIVATELY
     udp: false
     dialer-proxy: Front
-# Front 必须是已存在且可用的前置节点/组
-# 规则集及对应代理组需要根据实际配置补齐
+proxy-groups:
+  - name: ClaudeExit
+    type: select
+    proxies: [Residential]
+listeners:
+  - name: claude-browser
+    type: socks
+    listen: 127.0.0.1
+    port: 7898
+    udp: false
+    proxy: ClaudeExit
 rules:
   - DOMAIN-SUFFIX,claude.ai,ClaudeExit
   - DOMAIN-SUFFIX,claude.com,ClaudeExit
   - DOMAIN-SUFFIX,anthropic.com,ClaudeExit
-  - RULE-SET,DomesticDomains,DIRECT
-  - RULE-SET,DomesticIPs,DIRECT
-  - MATCH,Front
+  # 此后保留你原有的国内白名单 DIRECT 规则
+  # 最后保留或调整 MATCH 到实际前置组
 ```
 
-使用客户端当前支持的国内规则集，核对 rule-provider 名称、行为与下载状态。不要直接覆盖整个订阅，导致原节点、DNS 或客户端扩展丢失。认证域名可能变化，应结合当前连接日志补齐。
+国内规则集需要用户当前配置中的真实 rule-provider，不能照抄不存在的名字。认证域名可能变化：根据目标请求连接日志补齐。Mac 可使用 TUN 接管；也可使用系统/应用显式代理。开关位置和系统授权依版本而异。
 
-### 端口迁移
+**预期结果：** 目标请求的连接日志显示住宅经指定前置；国内请求命中 DIRECT；其他海外请求命中前置。只看到 TUN 开启或测速数字还不够。
 
-先看端口归属：
+依据：[Mihomo dialer-proxy](https://wiki.metacubex.one/config/proxies/dialer-proxy/) · [listener 固定出站](https://wiki.metacubex.one/config/inbound/listeners/) · [SOCKS listener](https://wiki.metacubex.one/config/inbound/listeners/socks/) · [规则](https://wiki.metacubex.one/config/rules/)。
 
-```bash
-lsof -nP -iTCP:7897 -sTCP:LISTEN
-lsof -nP -iTCP:7898 -sTCP:LISTEN
-scutil --proxy
-```
+## 4. BitBrowser：每个字段填什么
 
-数字是历史示例。如果 Clash 临时换了端口，应用仍可能指向旧端口；TUN 不会自动修正所有显式代理地址。验证新核心的实际请求，再由用户完成可能让当前聊天断线的旧客户端退出。
+![本次补拍：创建窗口空白表单，未保存](../assets/ui/bitbrowser-new-window.png)
 
-### 验收
+**入口：** 左侧 **浏览器窗口** → 先找已有目标环境；全新环境才点 **创建窗口** → **基础设置**。窗口名称用容易识别的名字，例如“Claude 专用”。平台用户名、平台密码、2FA、Cookie 不需要为了建立网络而填写。
 
-在实际接管后请求 `https://claude.ai/cdn-cgi/trace`，同时检查 Clash 日志中的命中组与链路。若普通 IPinfo 走海外默认组，它只能验证该默认组，不能验证 Claude 专用住宅路径。
+![本次补拍：自定义代理 SOCKS5 的空白字段，未保存](../assets/ui/bitbrowser-proxy.png)
 
-节点名称不是出口证据。TUN 开启、组里没有 DIRECT，也不是客户端退出后的断线保护证据。要验收故障、订阅刷新、休眠与重启，需要分别测试。
+**接第 3 步的本地专用入口时：**
 
-机制参考：[Mihomo dialer-proxy](https://wiki.metacubex.one/config/proxies/dialer-proxy/)、[规则](https://wiki.metacubex.one/config/rules/)、[TUN](https://wiki.metacubex.one/config/inbound/tun/)。
+| UI 字段 | 填什么 | 为什么 |
+|---|---|---|
+| 代理方式 | 自定义代理 | 使用自己的本地入口 |
+| 代理类型 | Socks5 | 对应 listener 的 type: socks |
+| 代理主机 | `127.0.0.1` | 当前这台电脑的 Clash；不能填旧电脑地址 |
+| 代理端口 | 本机 B | 必须已经监听并固定到住宅 |
+| 代理账号 / 密码 | 默认留空 | 本例本地入口未单独配置认证；若现有入口要求认证则使用其参数 |
+| UDP | 按整条链路实际支持情况 | 本例住宅不支持时关闭 |
+| 代理检测 | 字段完成后点击 | 检查当前入口可用；再用窗口内真实请求复验 |
 
-## 4. BitBrowser、邮箱与 OAuth
+不要把 kookeey 的账号密码填到无认证的本地入口；直接连接供应商则是另一条路径，需要服务器及认证，并且须确认当前网络能到达该服务器。
 
-复用已存在的 Claude 专用环境。本项目偏好是序号 1「Claude｜美国洛杉矶住宅」；别的机器需先找到对应环境，不能盲建同名副本。
+新建时检查语言、时区、WebRTC 和定位等隐私设置是否符合自己的需求。已有环境不要反复随机指纹或清 Cookie。图里背景的环境名、出口和软件版本只是历史示例。
 
-专用窗口可能通过本地 SOCKS5 入口整体走住宅，和 Mac 7897 的域名分流不同。历史专用入口为 7898；当前值必须重新核对。
+**预期结果：** 保存并打开目标窗口，在窗口内访问 `https://ipinfo.io/json`，返回当前住宅出口；然后访问 Claude 并完成真实回复。只看供应商 IP 的搜索结果不算验证当前出口。
 
-先在此窗口确认真实出口，再收信、打开验证链接和 CLI OAuth URL。不要因为旧 Chrome 中存在其他邮箱的 onboarding 页，就认为目标账号已完成登录。
+## 5. Claude 网页与 CLI：两处都验收
 
-界面语言、浏览器时区和整机语言/时区分别管理。历史设置曾参考英语、洛杉矶时区以及 WebRTC/定位限制；不要为了复制旧教程降级到指定旧内核，也不要将这些设置表述为防封保证。
+收信、验证链接、网页登录和 CLI OAuth 使用同一个已确认的专用窗口。验证码、密码和一次性授权码由用户处理，不放入教程、截图或 Git。
 
-邮箱注册以进入收件箱或等效成功状态为准。验证码、条款、授权等由用户按实际页面处理；邮件账号和 Claude 账号应在登录时明确核对。
+![旧会话原图：CLI 仍显示 MiniMax 与 API Usage Billing；这不是官方订阅验收成功](../assets/ui/claude-stale-provider.png)
 
-## 5. iPhone：先配置节点，再查当前 IP
-
-![Shadowrocket 配置与实际出口核对示意](../assets/04-iphone.png)
-
-使用已有 Shadowrocket 节点时先检查，避免重复创建。新增住宅节点时，填供应商当前 SOCKS5 参数，在“代理通过”选择可用前置。不要把普通“美国01”本身当成所购住宅节点。
-
-保存、选中住宅节点、启用 VPN，再在 Safari 访问：
-
-- `https://ipinfo.io/json`
-- `https://claude.ai/cdn-cgi/trace`
-
-读取服务端返回的当前出口。不要手动搜索购买 IP 的地理信息后，把查询结果当成手机出口。
-
-本项目手机曾使用全局代理，没有配置国内白名单。要手机国内直连需单独提出并验证，Mac 白名单不会自动同步。
-
-需要 AI 控制手机时，先检查 iPhone Use 的可驱动状态。完整 Xcode、平台组件、开发签名、开发者模式、证书信任和 USB 通道都可能是前提；仅识别设备不等于已能点击。
-
-## 6. Claude Code：认证和实际请求都要过
-
-![OAuth 后仍需检查实际 provider 与请求](../assets/05-oauth.png)
-
-先看命中入口：
-
-```bash
-type -a claude
-command -v claude
-claude --version
-claude auth status
-```
-
-历史问题是旧 Volta 入口和原生入口并存；以及 OAuth 已成功，但 settings 仍覆盖到 MiniMax。先识别当前二进制，再按目标处理配置。
-
-在指定 BitBrowser 环境打开 CLI 生成的完整授权 URL，完成授权后启动新的 CLI 进程。若目标是官方订阅，核对认证方式和 provider，而非只看邮箱字段。
-
-最小实际请求可用：
+1. 网页先确认正确账号、套餐页面及一次真实回复。历史截图中的套餐或模型名不作为今天的服务状态。
+2. 新终端运行 `type -a claude`、`claude --version`、`claude auth status`。Windows 用 `Get-Command claude -All` 查看入口。
+3. 首次运行 `claude`，按当前官方登录流程生成授权 URL；自动打开了其他浏览器时，把本次完整 URL 在目标专用窗口中打开。不要复制旧会话的链接。
+4. 若 OAuth 后仍显示 MiniMax，先备份设置，按目标处理旧 `ANTHROPIC_*` provider/模型覆盖；设置、进程环境与旧 CLI 进程分别检查。不要整体删除设置或认证。
+5. 新进程发一次最小请求。先查 `claude --help`，确认当前版本支持下面选项；不支持时依据当前官方 CLI 文档使用等效限制。
 
 ```bash
 claude -p 'Reply exactly OK' \
@@ -142,20 +151,61 @@ claude -p 'Reply exactly OK' \
   --no-session-persistence --max-turns 1 --output-format json
 ```
 
-这些选项曾在本项目版本上验证；使用前核对当前 `claude --help` 是否支持。不为模型测试临时扩大权限或放开全部工具。
+**预期结果：** 正确入口、目标认证方式/provider、一次真实成功响应。认证命令可能含账号信息，只在本机查看，不原样提交日志。钥匙串受限是“未能检查”，不能直接认定已登出。
 
-完成条件：正确入口 + 正确账号/provider + 成功真实响应。不要把旧进程的启动画面当作新配置结果；修改设置后退出旧进程并重开。
+![旧会话原图：反复 Reconnecting；这是失败提示](../assets/ui/network-reconnecting.png)
 
-## 7. 日常复用、到期切换与记录
+反复重连时，回查当前进程实际用的端口、对应监听者和目标域名链路。恢复一个入口后，要分别复验网页与 CLI。
 
-日常只检查现有环境，别重复清理身份或新建浏览器。供应商到期前核对备用节点，暂停旧请求和长连接后切换。
+## 6. iPhone 是可选的另一条链路
 
-同时处理三处：Mac Claude出口组、BitBrowser 专用入口实际绑定的出口、手机住宅节点。改完 Mac 组不保证浏览器固定入口和手机也改变。
+本包暂未收录可安全发布的本人手机 UI 原图；下面明确为示意，不能当手机实测证据。
 
-记录：日期、目标、备份、实际步骤、入口与版本、真实请求结果、未验证项。支付金额/续费需要订单证据；套餐显示正常不能补出未记录的付款过程。
+![Shadowrocket 操作示意，并非真实手机截图](../assets/04-iphone.png)
 
-## 来源与适用条件
+在 Shadowrocket 中先检查已有住宅节点。新增时使用当前供应商 SOCKS5 参数，“代理通过”选择可用前置；保存、选中住宅节点并启用 VPN。在 Safari 访问 `https://ipinfo.io/json` 和 `https://claude.ai/cdn-cgi/trace`，读取服务端当前响应。
 
-本指南从本机 2026-10-10 至 11 配置和排障记录提炼，去除了个人账号、真实出口、机器路径、会话 ID 和凭据。它保留通用机制与实际踩坑，不作为当前价格、软件版本或网页布局说明。
+Mac 国内白名单不会自动同步手机。需要 AI 控制手机还需单独安装/验收 iPhone Use、Xcode、签名、开发者模式和 USB 通道；识别设备不等于能完成点击。
 
-用户指定供应商入口：[kookeey 静态线路](https://www.kookeey.net/clientarea/#/static/list)。服务支持条件应以 [Anthropic 官方支持地区](https://www.anthropic.com/supported-countries) 和当前账号页面为准。图由 Claude 制作，主代理审查；示意不能替代实际验收。
+## 7. 迁移到另一台电脑
+
+1. 按 [安装说明](install.md) 获取完整 Skill，包括 assets、references、scripts，不能只复制 SKILL.md。
+2. 新机按第 0 步安装软件；用第 1 步重新采集参数。旧机 `127.0.0.1:B` 只能指向旧机自己，复制到新机前必须先在新机建立该入口。
+3. 通过服务商正常登录/自己的私有备份迁移订阅；不要通过 Git 迁移密码、Cookie、Token、OAuth URL 或钥匙串文件。
+4. BitBrowser 同步环境也需要本机可用代理。确认既有环境和同步授权，保留原环境；不要假定所有登录已随 Skill 搬过来。
+5. 重新完成下面验收表。旧电脑的成功记录不能代替新机结果。
+
+### Windows 的差异
+
+官方安装可在 PowerShell 运行 `irm https://claude.ai/install.ps1 | iex`，完成后重开 PowerShell。Skill 的通用图文与字段映射可复用；Clash 安装包、服务安装、TUN 授权、路径及进程检查需按 Windows 处理。WSL 是独立网络/文件环境，不能直接假定它的 loopback 就是 Windows 的代理入口。
+
+本包检查脚本明确只支持 macOS/Linux 的自动检查，Windows 运行会报告不支持并退出。Windows 手动检查自己的实际端口，例如：
+
+```powershell
+Get-Command claude -All
+claude --version
+Get-NetTCPConnection -State Listen -LocalPort 7897,7898 |
+  Select-Object LocalAddress,LocalPort,OwningProcess
+```
+
+7897/7898 替换为当前 P/B。这些 Windows 步骤来自官方说明与系统命令，未在 Windows 真机上跑过。
+
+## 8. 最后按这张表验收
+
+| 环节 | 需要看到的结果 | 没做时怎么记录 |
+|---|---|---|
+| 配置 | 核心校验成功；重载后仍正常 | 未验证配置 |
+| Mac 分流 | 国内 DIRECT、目标住宅链、海外前置的真实请求及日志 | 未验证实际路由 |
+| BitBrowser | 目标窗口当前出口符合预期，Claude 真实回复 | 未验证浏览器 |
+| 邮箱 | 能进入收件箱并收所需邮件 | 未验证收信 |
+| Claude Code | 目标 provider/认证及新进程真实回复 | 未验证模型调用 |
+| iPhone（需要时） | Safari 当前出口与真机操作成功 | 未验证手机 |
+| 重启/故障（需要时） | 各场景独立测试成功 | 未验证恢复或断线保护 |
+
+可选运行 `python3 scripts/inspect_environment.py --ports P B`（先将 P/B 换成数字）。不传 --ports 时不检查任何历史默认端口。脚本只读、只输出过滤后的状态；运行成功也不能代替真实网络和模型验收。
+
+## 图片与证据范围
+
+本版包含 4 张旧会话用户原图和 2 张本次补拍的空白表单；没有修改图片像素。全部 Error、MiniMax、Reconnecting 都标为失败案例。购买页只是界面参考；新表单查看后已取消，没有创建新窗口，也没有付款或改变网络配置。
+
+[来源清单](../assets/ui/sources.json) 记录日期、用途及 SHA256；不打包原始会话、密码截图或私人聊天。旧版示意图仍留作概念补充，不能当实际产品截图。新电脑与 Windows 的端到端配置尚未实机验证。

@@ -1,0 +1,44 @@
+[
+  {
+    "file": "network-reconnecting.png",
+    "source": "旧会话用户截图：网络反复重连",
+    "captured": "2026-10-10",
+    "sha256": "6c4647f27ac21e577f010ffb2d1adbf5717ec23ca329b3465427deac8baf408f",
+    "edited": false
+  },
+  {
+    "file": "clash-nodes-error.png",
+    "source": "旧会话用户截图：节点全红，失败状态",
+    "captured": "2026-10-10",
+    "sha256": "696749bc90ab0c2357396515be6d0f9f018ad314328a2e83ca7f2503d9713415",
+    "edited": false
+  },
+  {
+    "file": "claude-stale-provider.png",
+    "source": "旧会话用户截图：CLI 仍显示 MiniMax，失败状态",
+    "captured": "2026-10-10",
+    "sha256": "ebb37f44c564bd4067e6515b6445212b66a8711bc812d95df383dbe8e6e31c46",
+    "edited": false
+  },
+  {
+    "file": "kookeey-buy-history.png",
+    "source": "旧会话用户截图：购买页，历史价格及默认地区",
+    "captured": "2026-10-10",
+    "sha256": "8e59f4407bfdc9aa7cf735d974c322bf06d1d97f1af43c4996377d27ddb067f7",
+    "edited": false
+  },
+  {
+    "file": "bitbrowser-new-window.png",
+    "source": "本次补拍：未填写未保存的新窗口表单，背景含历史出口，请勿照抄",
+    "captured": "2026-10-11",
+    "sha256": "f42b7dbbcaf99add27b9d888b6dad43047910b598af18ef0586c7dd5679dcd07",
+    "edited": false
+  },
+  {
+    "file": "bitbrowser-proxy.png",
+    "source": "本次补拍：未填写未保存的新窗口表单，背景含历史出口，请勿照抄",
+    "captured": "2026-10-11",
+    "sha256": "11f574c461630366b66ee0be22633d8847350adb91d3d3eca8a876e65b8ab40e",
+    "edited": false
+  }
+]
